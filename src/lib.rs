@@ -27,11 +27,12 @@ mod options;
 // Rust's error handling is very powerful, but it takes some getting used to.
 mod errors;
 
-// Traits are Rust's analog to Interfaces, and remove the need for class hierarchy.
-mod traits;
-
 // Generics are unusually powerful in Rust.
 mod generics;
+
+// Traits are Rust's analog to Interfaces, and remove the need for class hierarchy.
+// They interact powerfully with generics.
+mod traits;
 
 // Bonus Round: Iterators are a powerful example of traits in Rust.
 mod iterators;
