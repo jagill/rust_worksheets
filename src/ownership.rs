@@ -15,9 +15,10 @@ mod tests {
         let y = x;
         // We cannot use x anymore, it's been moved
         // EXERCISE: Uncomment this and try to run the test
-        // println!("test_move_semantics {x:?}");
+        // println!("test_ownership_move_semantics {x:?}");
         // y has ownership of the original Foo value
-        println!("test_move_semantics {y:?}");
+        println!("test_ownership_move_semantics {y:?}");
+        // NB: {y:?} prints the Debug info for y.  Not generally for end-user consumption.
     }
 
     fn pass_by_move(foo: Foo) {
@@ -80,8 +81,44 @@ mod tests {
         // EXERCISE: do this with std::mem::swap or std::mem::replace
     }
 
+    #[test]
+    fn test_ownership_strings() {
+        // Rust is a bit persnickity about different string types.
+        // Defining things the "natural" way gives you an immutable literal &str
+        // that's valid for the lifetime of the whole program ("static").
+        let s1: &'static str = "literal";
+
+        // To have an owned string that you can mutate, you need String.
+        let mut s: String = String::from("different literal");
+        let s_mut: &mut String = &mut s;
+        // '!' is the (4-byte) unicode literal character
+        s_mut.push('!');
+        // &String is always used as &str.  &String is basically never used.
+
+        fn print_me(me: &str) {
+            println!("Me: {me}");
+        }
+        print_me(&s);
+
+        // But String and str are pretty interoperable:
+        assert_eq!(s, "different literal!");
+    }
+
     // Pro-tip: You can define structs in all sorts of scopes.
+    #[derive(Debug, Clone)]
     struct Bar(String);
+
+    #[test]
+    fn test_ownership_clone() {
+        // You can make things simpler in a lot of cases by cloning an object.  If the object
+        // `foo` implements Clone, calling `foo.clone()` will make a deep copy of it.
+        // You can skip a lot of borrow checker/lifetime pain with this trick.
+        let bar = Bar(String::from("don't change me!"));
+        let mut bar2 = bar.clone();
+        bar2.0.replace_range(0..5, "please");
+        assert_eq!(bar.0, "don't change me!");
+        assert_eq!(bar2.0, "please change me!");
+    }
 
     #[test]
     fn exercise_ownership_move() {
@@ -92,7 +129,7 @@ mod tests {
         // r##""## allows quotes and #s, etc.
         unimplemented!(
             r#"
-            Make a function that takes a Bar, and returns a Bar with "... at work!" appended to its interior.
+            Make a function that takes a Bar by move, and returns a Bar with "... at work!" appended to its interior.
             Search for `rustlang String` for the String API.
             But be warned -- Strings can be a rabbit hole, just learn what you need.
         "#

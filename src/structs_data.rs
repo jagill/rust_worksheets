@@ -23,7 +23,7 @@ struct Foo {
 
 #[cfg(test)]
 mod tests {
-    // Pro-tip: Using * in `use` statements is an antipattern for "imports".
+    // Pro-tip: Using * in `use` statements is an antipattern when importing.
     // But for inline modules (particularly tests), it reduces cognitive burden
     // to have "everything above" in scope with the same symbols.
     use super::*;
@@ -35,10 +35,10 @@ mod tests {
             // Wait, didn't we use String::from before?  What's this to_owned?
             msg: "All's good".to_owned(),
         };
-        // You can elide some or all field assignment if you use a correctly named variable.
         let ok = true;
         // Wait, didn't we just use `to_owned`?  What's the deal?
         let msg = "All's good".to_string();
+        // You can elide some or all field assignment if you use a correctly named variable.
         let foo2 = Foo { ok, msg };
         assert_eq!(foo1.msg, foo2.msg);
         // EXERCISE: Uh-oh, why can't we check for equality of Foo?  Search for PartialEq and get this to compile.

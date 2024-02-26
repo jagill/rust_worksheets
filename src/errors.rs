@@ -175,5 +175,89 @@ mod tests {
         // assert_eq!(foo(), Ok(10));
     }
 
-    // TODO: Anyhow vs thiserror
+    #[test]
+    fn exercise_errors_structured_errors() {
+        enum QueryError {
+            /// May be transient; retry soon.
+            Network { http_code: u16, reason: String },
+            /// User error; don't retry without changing input
+            Parsing { row: u32, col: u32 },
+            /// Non-transient server error; file a bug with oncall
+            Server { desc: String },
+        }
+
+        fn run_query(query: &str) -> Result<String, QueryError> {
+            Err(QueryError::Parsing { row: 10, col: 4 })
+        }
+
+        unimplemented!(
+            r#"
+            Rust allows structured errors so that callers can respond intelligently to the type of error.
+            `match` on the output of run_query, giving a different user message based on whether it's a
+            success, or what find of failure it is.
+            "#
+        );
+    }
+
+    #[test]
+    fn exercise_errors_thiserror() {
+        unimplemented!(
+            r#"
+            Rust actually defines a trait `std::error::Error`, which gives functions commonly
+            needed for reporting, like a user-facing message and the ability to nest errors.
+            It's best to implement this, so that your error is interoperable with other errors.
+
+            dtolnay has made a great library called `thiserror`, which does most of the work
+            for you.  Check out https://docs.rs/thiserror/latest/thiserror/ and rewrite
+            QueryError above using `thiserror`.
+            "#
+        );
+    }
+
+    #[test]
+    fn exercise_errors_anyhow() {
+        unimplemented!(
+            r#"
+            dtolnay has made another error library `anyhow`, for when you just want throw
+            undifferentiated errors.  This is useful in a CLI or executable when you can't
+            reasonable recover from the error.  It has nice features like ease-of-use and
+            ergonomic adding of context.  It also can "absorb" anything that implements
+            std::error::Error (technically implements `From`), so it can easily
+
+            PLEASE NOTE: It is bad practice to use this in libraries
+            that others might consume, because it doesn't give enough information for them
+            to intelligently respond.  It's equivalent to a Java unchecked RuntimeException.
+            Only use it for executables that you control.
+            "#
+        );
+
+        #[derive(thiserror::Error, Debug)]
+        enum InnerError {
+            #[error("Uh-oh, something is WRONG {0}")]
+            Wrong(String),
+        }
+
+        fn inner() -> Result<i32, InnerError> {
+            let some_call = Err(InnerError::Wrong(String::from("sad")));
+            // Aside: Check out this sweet type inference!
+            let something_else = some_call?;
+            Ok(something_else)
+        }
+
+        fn outer() -> Result<i32, anyhow::Error> {
+            // anyhow automatically converts from InnerError!
+            let i = inner()?;
+            if i == 5 {
+                // quickly make an anyhow::Error with `bail!`.
+                anyhow::bail!("I don't like 5!");
+            }
+
+            Ok(i)
+        }
+
+        match outer() {
+            Ok(i) => println!("Got {i}"),
+            Err(e) => unimplemented!("Fill this in!"),
+        }
+    }
 }

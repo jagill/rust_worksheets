@@ -14,7 +14,8 @@ mod tests {
 
         // Rust is pretty good at type inference, although there are many types of integers.
         let y = 2;
-        assert_eq!(y, 2);
+        let z: u8 = 3;
+        assert_eq!(y + z, 5);
     }
 
     #[test]

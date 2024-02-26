@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
+#![allow(unreachable_code)]
 
 // First let's look at how versatile Rust's "everything is an expression"
 // philosophy is.
