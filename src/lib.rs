@@ -34,14 +34,11 @@ mod generics;
 // They interact powerfully with generics.
 mod traits;
 
-// Bonus Round: Iterators are a powerful example of traits in Rust.
-mod iterators;
-
 // Lifetimes were never supposed to be something that normal people interacted with. Hah!
 mod lifetimes;
 
 // Using closures successfully in Rust requires understanding them more deeply.
 mod closures;
 
-// Rust's async is very powerful, but still has some rough edges.  Let's dive in, level by level.
-mod async_await;
+// Some strategies for testing Rust
+mod testing;
