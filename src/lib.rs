@@ -39,6 +39,3 @@ mod lifetimes;
 
 // Using closures successfully in Rust requires understanding them more deeply.
 mod closures;
-
-// Some strategies for testing Rust
-mod testing;
